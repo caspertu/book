@@ -17,7 +17,7 @@ func SetupRouter(r *gin.Engine) (*gin.Engine) {
 		apiv1books.GET("/:id", fetchSingle)
 		apiv1books.POST("/", create)
 		apiv1books.DELETE("/:id", remove)
-		//apiv1books.GET("/", fetchSingle)
+		apiv1books.PUT("/:id", update)
 	}
 	return r
 }
@@ -48,6 +48,17 @@ func create(c *gin.Context) {
 func remove(c *gin.Context) {
 	param := c.Param("id")
 	ID, _ := strconv.Atoi(param)
-	model.FindBook(ID).Delete()
-	c.JSON(http.StatusOK, gin.H{"data": ""})
+	book := model.FindBook(ID)
+	book.Delete()
+	c.JSON(http.StatusOK, gin.H{"data": book})
+}
+
+// UPDATE /api/v1/books/:id
+func update(c *gin.Context) {
+	param := c.Param("id")
+	ID, _ := strconv.Atoi(param)
+	book := model.FindBook(ID)
+	book.Title = "GoGo"
+	book.Update()
+	c.JSON(http.StatusOK, gin.H{"data": book})
 }

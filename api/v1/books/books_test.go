@@ -58,3 +58,28 @@ func TestHandlePost(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, expected, w.Body.String())
 }
+
+func TestHandleDelete(t *testing.T) {
+	app := gin.Default()
+	router := SetupRouter(app)
+	w := httptest.NewRecorder()
+	ID := 1
+	req, _ := http.NewRequest("DELETE", "/api/v1/books/" + strconv.Itoa(ID) , nil)
+	router.ServeHTTP(w, req)
+	expected := `{"data":{"Title":"Go","Author":"At","ID":1}}`
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, expected, w.Body.String())
+}
+
+func TestHandlePut(t *testing.T) {
+	app := gin.Default()
+	router := SetupRouter(app)
+	w := httptest.NewRecorder()
+	ID := 1
+	req, _ := http.NewRequest("PUT", "/api/v1/books/" + strconv.Itoa(ID) , nil)
+	router.ServeHTTP(w, req)
+	expected := `{"data":{"Title":"GoGo","Author":"At","ID":1}}`
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, expected, w.Body.String())
+	t.Log(w.Body.String())
+}
