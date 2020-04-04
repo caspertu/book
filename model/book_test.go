@@ -3,9 +3,10 @@ package model
 import "testing"
 
 func TestCreate(t *testing.T) {
-	expected := 1
-	b := Book{"Go", "At"}
-	actual := b.Create()
+	expected := 2
+	b := New()
+	b.Create()
+	actual := b.ID
 	if expected != actual {
 		t.Errorf("Create() actual return %d, expected %d", actual, expected)
 	}
@@ -13,10 +14,9 @@ func TestCreate(t *testing.T) {
 }
 
 func TestFindBook(t *testing.T) {
-	book := Book{"Go", "At"}
-	ID := book.Create()
+	ID := 1
 	actual := FindBook(ID)
-	expected := &Book{"Go", "At"}
+	expected := New()
 	if *expected != *actual {
 		t.Errorf("Create() actual return %v, expected %v", actual, expected)
 	}
@@ -24,21 +24,19 @@ func TestFindBook(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	expected := true
 	book := FindBook(1)
 	actual := book.Delete()
-	if expected != actual {
-		t.Errorf("Delete() actual return %t, expected %t", actual, expected)
+	if !actual {
+		t.Errorf("Delete() actual return %t", actual)
 	}
 	t.Logf("book.Delete() return %t", actual)
 }
 
 func TestUpdate(t *testing.T) {
-	expected := true
 	book := FindBook(1)
 	actual := book.Update()
-	if expected != actual {
-		t.Errorf("Update() actual return %t, expected %t", actual, expected)
+	if !actual {
+		t.Errorf("Update() actual return %t", actual)
 	}
 	t.Logf("book.Update() return %t", actual)
 }

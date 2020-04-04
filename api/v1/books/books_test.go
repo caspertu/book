@@ -23,6 +23,18 @@ func TestPingRoute(t *testing.T) {
 	assert.Equal(t, "pong", w.Body.String())
 }
 
+func TestFetchAll(t *testing.T) {
+	app := gin.Default()
+	router := SetupRouter(app)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/api/v1/books/", nil)
+	router.ServeHTTP(w, req)
+
+	expected := `{"data":[{"Title":"Go","Author":"At","ID":1}]}`
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, expected, w.Body.String())
+}
+
 func TestHandleGet(t *testing.T) {
 	ID := 1
 	app := gin.Default()
@@ -31,6 +43,18 @@ func TestHandleGet(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/api/v1/books/" + strconv.Itoa(ID) , nil)
 	router.ServeHTTP(w, req)
 
+	expected := `{"data":{"Title":"Go","Author":"At","ID":1}}`
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "1", w.Body.String())
+	assert.Equal(t, expected, w.Body.String())
+}
+
+func TestHandlePost(t *testing.T) {
+	app := gin.Default()
+	router := SetupRouter(app)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/v1/books/" , nil)
+	router.ServeHTTP(w, req)
+	expected := `{"data":{"Title":"Go","Author":"At","ID":2}}`
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, expected, w.Body.String())
 }

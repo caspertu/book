@@ -1,8 +1,10 @@
 package books
 
 import (
+	"github.com/caspertu/book/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func SetupRouter(r *gin.Engine) (*gin.Engine) {
@@ -11,17 +13,41 @@ func SetupRouter(r *gin.Engine) (*gin.Engine) {
 	})
 	apiv1books := r.Group("/api/v1/books")
 	{
-		apiv1books.GET("/:id", FetchSingle)
+		apiv1books.GET("/", fetchAll)
+		apiv1books.GET("/:id", fetchSingle)
+		apiv1books.POST("/", create)
+		apiv1books.DELETE("/:id", remove)
+		//apiv1books.GET("/", fetchSingle)
 	}
 	return r
 }
 
-// :ID
-func FetchSingle(c *gin.Context) {
-	ID := c.Param("id")
-	//data := gin.H{
-	//	"data": ID,
-	//}
-	//c.IndentedJSON(http.StatusOK, data)
-	c.String(http.StatusOK, ID)
+// GET /api/v1/books/
+func fetchAll(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"data": model.FindAll()})
+}
+
+// fetchSingle 获得一个
+// GET /api/v1/books/:ID
+func fetchSingle(c *gin.Context) {
+	param := c.Param("id")
+	ID, _ := strconv.Atoi(param)
+	book := model.FindBook(ID)
+	c.JSON(http.StatusOK, gin.H{"data": book})
+}
+
+// create ...
+// POST /api/v1/books/
+func create(c *gin.Context) {
+	book := model.New()
+	book.Create()
+	c.JSON(http.StatusOK, gin.H{"data": book})
+}
+
+// DELETE /api/v1/books/:id
+func remove(c *gin.Context) {
+	param := c.Param("id")
+	ID, _ := strconv.Atoi(param)
+	model.FindBook(ID).Delete()
+	c.JSON(http.StatusOK, gin.H{"data": ""})
 }
