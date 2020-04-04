@@ -1,19 +1,12 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/caspertu/book/api/v1/books"
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
 	r := gin.Default()
-	setupRouter(r)
+	books.SetupRouter(r)
 	r.Run()
-}
-
-func ping(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "pong",
-	})
-}
-
-func setupRouter(r *gin.Engine) {
-	r.GET("/ping", ping)
 }
