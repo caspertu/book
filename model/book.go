@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 func init() {
 	New().Create()
@@ -14,13 +17,16 @@ type Book struct {
 }
 
 var bookStore []*Book
+var 	maxID  int
+
 
 func (b *Book) String() string {
 	return fmt.Sprintf("Book{Title: %s, Author: %v, ID: %d}", b.Title, b.Author, b.ID)
 }
 
 func New() *Book {
-	return &Book{Title: "Go", Author: "At", ID: 1}
+	maxID += 1
+	return &Book{Title: "Go", Author: "At", ID: maxID}
 }
 
 func (b *Book) Create() {
@@ -28,21 +34,30 @@ func (b *Book) Create() {
 		bookStore = make([]*Book, 0, 128)
 	}
 	bookStore = append(bookStore, b)
-	b.ID = len(bookStore)
-	fmt.Printf("Book Created, ID=%d", b.ID)
+	fmt.Printf("Book Created, %v\n", b)
 }
 
 func FindAll() []*Book {
 	return bookStore
 }
 
-func FindBook(ID int) *Book {
-	//return Book{"Go", "At"}
-	return bookStore[ID-1]
+func FindBook(ID int) (*Book, error) {
+	for _, book := range bookStore {
+		if book.ID == ID {
+			return book, nil
+		}
+	}
+	return nil, errors.New("not found")
 }
 
 func (b *Book) Delete() bool {
-	return true
+	for k, book := range bookStore {
+		if b.ID == book.ID {
+			bookStore = append(bookStore[:k], bookStore[k+1:]...)
+			return true
+		}
+	}
+	return false
 }
 
 func (b *Book) Update() bool {

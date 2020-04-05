@@ -5,16 +5,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strconv"
 	"testing"
 )
 
-func TestPingRoute(t *testing.T) {
-	router := gin.Default()
-	router.GET("/ping", func(c *gin.Context) {
-		c.String(200, "pong")
-	})
+var router *gin.Engine
 
+func TestMain(m *testing.M) {
+	router = SetupRouter(gin.Default())
+	os.Exit(m.Run())
+}
+
+func TestPingRoute(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/ping", nil)
 	router.ServeHTTP(w, req)
@@ -24,12 +27,9 @@ func TestPingRoute(t *testing.T) {
 }
 
 func TestFetchAll(t *testing.T) {
-	app := gin.Default()
-	router := SetupRouter(app)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/books/", nil)
 	router.ServeHTTP(w, req)
-
 	expected := `{"data":[{"Title":"Go","Author":"At","ID":1}]}`
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, expected, w.Body.String())
@@ -37,49 +37,40 @@ func TestFetchAll(t *testing.T) {
 
 func TestHandleGet(t *testing.T) {
 	ID := 1
-	app := gin.Default()
-	router := SetupRouter(app)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/api/v1/books/" + strconv.Itoa(ID) , nil)
+	req, _ := http.NewRequest("GET", "/api/v1/books/"+strconv.Itoa(ID), nil)
 	router.ServeHTTP(w, req)
-
 	expected := `{"data":{"Title":"Go","Author":"At","ID":1}}`
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, expected, w.Body.String())
 }
 
 func TestHandlePost(t *testing.T) {
-	app := gin.Default()
-	router := SetupRouter(app)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/v1/books/" , nil)
+	req, _ := http.NewRequest("POST", "/api/v1/books/", nil)
 	router.ServeHTTP(w, req)
 	expected := `{"data":{"Title":"Go","Author":"At","ID":2}}`
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, expected, w.Body.String())
 }
 
-func TestHandleDelete(t *testing.T) {
-	app := gin.Default()
-	router := SetupRouter(app)
-	w := httptest.NewRecorder()
-	ID := 1
-	req, _ := http.NewRequest("DELETE", "/api/v1/books/" + strconv.Itoa(ID) , nil)
-	router.ServeHTTP(w, req)
-	expected := `{"data":{"Title":"Go","Author":"At","ID":1}}`
-	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, expected, w.Body.String())
-}
-
 func TestHandlePut(t *testing.T) {
-	app := gin.Default()
-	router := SetupRouter(app)
 	w := httptest.NewRecorder()
 	ID := 1
-	req, _ := http.NewRequest("PUT", "/api/v1/books/" + strconv.Itoa(ID) , nil)
+	req, _ := http.NewRequest("PUT", "/api/v1/books/"+strconv.Itoa(ID), nil)
 	router.ServeHTTP(w, req)
 	expected := `{"data":{"Title":"GoGo","Author":"At","ID":1}}`
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, expected, w.Body.String())
 	t.Log(w.Body.String())
+}
+
+func TestHandleDelete(t *testing.T) {
+	w := httptest.NewRecorder()
+	ID := 1
+	req, _ := http.NewRequest("DELETE", "/api/v1/books/"+strconv.Itoa(ID), nil)
+	router.ServeHTTP(w, req)
+	expected := `{"data":{"Title":"GoGo","Author":"At","ID":1}}`
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, expected, w.Body.String())
 }

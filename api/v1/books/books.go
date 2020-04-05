@@ -32,7 +32,10 @@ func fetchAll(c *gin.Context) {
 func fetchSingle(c *gin.Context) {
 	param := c.Param("id")
 	ID, _ := strconv.Atoi(param)
-	book := model.FindBook(ID)
+	book, err := model.FindBook(ID)
+	if err != nil {
+		panic(err)
+	}
 	c.JSON(http.StatusOK, gin.H{"data": book})
 }
 
@@ -48,7 +51,10 @@ func create(c *gin.Context) {
 func remove(c *gin.Context) {
 	param := c.Param("id")
 	ID, _ := strconv.Atoi(param)
-	book := model.FindBook(ID)
+	book, err := model.FindBook(ID)
+	if err != nil {
+		panic(err)
+	}
 	book.Delete()
 	c.JSON(http.StatusOK, gin.H{"data": book})
 }
@@ -57,7 +63,10 @@ func remove(c *gin.Context) {
 func update(c *gin.Context) {
 	param := c.Param("id")
 	ID, _ := strconv.Atoi(param)
-	book := model.FindBook(ID)
+	book, err := model.FindBook(ID)
+	if err != nil {
+		panic(err)
+	}
 	book.Title = "GoGo"
 	book.Update()
 	c.JSON(http.StatusOK, gin.H{"data": book})
