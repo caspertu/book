@@ -1,27 +1,27 @@
 package model
 
-import "testing"
+import (
+	"github.com/go-playground/assert/v2"
+	"testing"
+)
 
-var bookOne = Book{"Go", "At", 1}
+var bookOne = Book{ID: 1, Barcode: "", Title: "Go", Author: "At"}
 
 func TestCreate(t *testing.T) {
-	expected := 2
+	expected := 1
 	b := New()
 	b.Create()
+	b.Barcode = "123"
 	actual := b.ID
-	if expected != actual {
-		t.Errorf("Create() actual return %d, expected %d", actual, expected)
-	}
-	t.Logf("book.Create(), book.ID = %d", actual)
+	assert.Equal(t, actual, expected)
+	//t.Logf("book.Create(), book.ID = %d", actual)
 }
 
 func TestFindBook(t *testing.T) {
 	ID := 1
 	actual, _ := FindBook(ID)
 	expected := &bookOne
-	if *expected != *actual {
-		t.Errorf("FindBook() actual return %v, expected %v", actual, expected)
-	}
+	assert.Equal(t, actual, expected)
 	t.Logf("FindBook() return %v", actual)
 }
 
@@ -45,4 +45,12 @@ func TestDelete(t *testing.T) {
 		t.Errorf("Delete() actual return %t", actual)
 	}
 	t.Logf("book.Delete() return %t", actual)
+}
+
+func TestNewWithBarcode(t *testing.T) {
+	barcode := "9787115431356"
+	book := NewBookWithBarcode(barcode)
+	t.Log(book.Barcode)
+	book = book.GetInfo()
+	t.Log(book.Title)
 }

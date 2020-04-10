@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func SetupRouter(r *gin.Engine) (*gin.Engine) {
+func SetupRouter(r *gin.Engine) *gin.Engine {
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(200, "pong")
 	})
@@ -42,7 +42,11 @@ func fetchSingle(c *gin.Context) {
 // create ...
 // POST /api/v1/books/
 func create(c *gin.Context) {
-	book := model.New()
+	var book model.Book
+	err := c.ShouldBindJSON(&book)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
 	book.Create()
 	c.JSON(http.StatusOK, gin.H{"data": book})
 }
